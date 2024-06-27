@@ -1,10 +1,6 @@
 .PHONY: setup
 
-.SILENT: setup
+.ONESHELL:
 
-setup: .venv requirements.txt
-	.venv/bin/pip install -r requirements.txt
-	@echo "Run \`source .venv/bin/activate\`"
-
-.venv:
-	python3 -m venv .venv
+setup: project.jce
+	/usr/bin/plutil -replace mscpBaseURL -string $$(/usr/bin/osascript -l JavaScript -e "encodeURI(\"file://$$(pwd)/\")") project.jce
