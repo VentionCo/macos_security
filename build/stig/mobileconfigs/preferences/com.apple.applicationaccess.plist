@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>allowActivityContinuation</key>
+	<false/>
+	<key>allowAirDrop</key>
+	<false/>
+	<key>allowApplePersonalizedAdvertising</key>
+	<false/>
+	<key>allowAssistant</key>
+	<false/>
+	<key>allowAutoUnlock</key>
+	<false/>
+	<key>allowCloudDesktopAndDocuments</key>
+	<false/>
+	<key>allowCloudDocumentSync</key>
+	<false/>
+	<key>allowCloudKeychainSync</key>
+	<false/>
+	<key>allowCloudPrivateRelay</key>
+	<false/>
+	<key>allowContentCaching</key>
+	<false/>
+	<key>allowDiagnosticSubmission</key>
+	<false/>
+	<key>allowEraseContentAndSettings</key>
+	<false/>
+	<key>allowGameCenter</key>
+	<false/>
+	<key>allowPasswordAutoFill</key>
+	<false/>
+	<key>allowPasswordProximityRequests</key>
+	<false/>
+	<key>allowUSBRestrictedMode</key>
+	<true/>
+	<key>forceOnDeviceOnlyDictation</key>
+	<true/>
+</dict>
+</plist>
