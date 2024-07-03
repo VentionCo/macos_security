@@ -2103,22 +2103,9 @@ fi
 rule_arch=""
 if [[ "$arch" == "$rule_arch" ]] || [[ -z "$rule_arch" ]]; then
     unset result_value
-    result_value=$(bannerText="You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
-
-By using this IS (which includes any device attached to this IS), you consent to the following conditions:
-
--The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
-
--At any time, the USG may inspect and seize data stored on this IS.
-
--Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.
-
--This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.
-
--Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details."
-test "$(cat /etc/banner)" = "$bannerText" && echo "1" || echo "0"
+    result_value=$(
 )
-    # expected result {'integer': 1}
+    # expected result {'string': ''}
 
 
     # check to see if rule is exempt
@@ -2135,28 +2122,28 @@ EOS
 )   
     customref="$(echo "os_policy_banner_ssh_configure" | rev | cut -d ' ' -f 2- | rev)"
     customref="$(echo "$customref" | tr " " ",")"
-    if [[ $result_value == "1" ]]; then
-        logmessage "os_policy_banner_ssh_configure passed (Result: $result_value, Expected: \"{'integer': 1}\")"
+    if [[ $result_value == "" ]]; then
+        logmessage "os_policy_banner_ssh_configure passed (Result: $result_value, Expected: \"{'string': ''}\")"
         /usr/bin/defaults write "$audit_plist" os_policy_banner_ssh_configure -dict-add finding -bool NO
         if [[ ! "$customref" == "os_policy_banner_ssh_configure" ]]; then
             /usr/bin/defaults write "$audit_plist" os_policy_banner_ssh_configure -dict-add reference -string "$customref"
         fi
-        /usr/bin/logger "mSCP: stig - os_policy_banner_ssh_configure passed (Result: $result_value, Expected: "{'integer': 1}")"
+        /usr/bin/logger "mSCP: stig - os_policy_banner_ssh_configure passed (Result: $result_value, Expected: "{'string': ''}")"
     else
         if [[ ! $exempt == "1" ]] || [[ -z $exempt ]];then
-            logmessage "os_policy_banner_ssh_configure failed (Result: $result_value, Expected: \"{'integer': 1}\")"
+            logmessage "os_policy_banner_ssh_configure failed (Result: $result_value, Expected: \"{'string': ''}\")"
             /usr/bin/defaults write "$audit_plist" os_policy_banner_ssh_configure -dict-add finding -bool YES
             if [[ ! "$customref" == "os_policy_banner_ssh_configure" ]]; then
                 /usr/bin/defaults write "$audit_plist" os_policy_banner_ssh_configure -dict-add reference -string "$customref"
             fi
-            /usr/bin/logger "mSCP: stig - os_policy_banner_ssh_configure failed (Result: $result_value, Expected: "{'integer': 1}")"
+            /usr/bin/logger "mSCP: stig - os_policy_banner_ssh_configure failed (Result: $result_value, Expected: "{'string': ''}")"
         else
-            logmessage "os_policy_banner_ssh_configure failed (Result: $result_value, Expected: \"{'integer': 1}\") - Exemption Allowed (Reason: \"$exempt_reason\")"
+            logmessage "os_policy_banner_ssh_configure failed (Result: $result_value, Expected: \"{'string': ''}\") - Exemption Allowed (Reason: \"$exempt_reason\")"
             /usr/bin/defaults write "$audit_plist" os_policy_banner_ssh_configure -dict-add finding -bool YES
             if [[ ! "$customref" == "os_policy_banner_ssh_configure" ]]; then
               /usr/bin/defaults write "$audit_plist" os_policy_banner_ssh_configure -dict-add reference -string "$customref"
             fi
-            /usr/bin/logger "mSCP: stig - os_policy_banner_ssh_configure failed (Result: $result_value, Expected: "{'integer': 1}") - Exemption Allowed (Reason: "$exempt_reason")"
+            /usr/bin/logger "mSCP: stig - os_policy_banner_ssh_configure failed (Result: $result_value, Expected: "{'string': ''}") - Exemption Allowed (Reason: "$exempt_reason")"
             /bin/sleep 1
         fi
     fi
@@ -3181,7 +3168,7 @@ fi
 rule_arch=""
 if [[ "$arch" == "$rule_arch" ]] || [[ -z "$rule_arch" ]]; then
     unset result_value
-    result_value=$(/usr/bin/sudo /usr/bin/sudo -V | /usr/bin/grep -c "Authentication timestamp timeout: 0.0 minutes"
+    result_value=$(/usr/bin/sudo /usr/bin/sudo -V | /usr/bin/grep -c "Authentication timestamp timeout: 15.0 minutes"
 )
     # expected result {'integer': 1}
 
@@ -3471,7 +3458,7 @@ fi
 rule_arch=""
 if [[ "$arch" == "$rule_arch" ]] || [[ -z "$rule_arch" ]]; then
     unset result_value
-    result_value=$(/usr/bin/pwpolicy -getaccountpolicies 2> /dev/null | /usr/bin/tail +2 | /usr/bin/xmllint --xpath '//dict/key[text()="policyAttributeMaximumFailedAuthentications"]/following-sibling::integer[1]/text()' - | /usr/bin/awk '{ if ($1 <= 3) {print "yes"} else {print "no"}}'
+    result_value=$(/usr/bin/pwpolicy -getaccountpolicies 2> /dev/null | /usr/bin/tail +2 | /usr/bin/xmllint --xpath '//dict/key[text()="policyAttributeMaximumFailedAuthentications"]/following-sibling::integer[1]/text()' - | /usr/bin/awk '{ if ($1 <= 10) {print "yes"} else {print "no"}}'
 )
     # expected result {'string': 'yes'}
 
@@ -4827,7 +4814,7 @@ if [[ "$arch" == "$rule_arch" ]] || [[ -z "$rule_arch" ]]; then
 function run() {
   let delay = ObjC.unwrap($.NSUserDefaults.alloc.initWithSuiteName('com.apple.screensaver')\
 .objectForKey('askForPasswordDelay'))
-  if ( delay <= 5 ) {
+  if ( delay <= 60 ) {
     return("true")
   } else {
     return("false")
@@ -5945,103 +5932,16 @@ EOS
 os_policy_banner_loginwindow_enforce_audit_score=$($plb -c "print os_policy_banner_loginwindow_enforce:finding" $audit_plist)
 if [[ ! $exempt == "1" ]] || [[ -z $exempt ]];then
     if [[ $os_policy_banner_loginwindow_enforce_audit_score == "true" ]]; then
-        ask 'os_policy_banner_loginwindow_enforce - Run the command(s)-> bannerText="You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions:
-
--The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
-
--At any time, the USG may inspect and seize data stored on this IS.
-
--Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG authorized purpose.
-
--This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.
-
--Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details."
-/bin/mkdir /Library/Security/PolicyBanner.rtfd
-/usr/bin/textutil -convert rtf -output /Library/Security/PolicyBanner.rtfd/TXT.rtf -stdin <<EOF
-$bannerText
-EOF ' N
+        ask 'os_policy_banner_loginwindow_enforce - Run the command(s)-> /usr/local/bin/jamf policy --event policyBanner ' N
         if [[ $? == 0 ]]; then
             logmessage "Running the command to configure the settings for: os_policy_banner_loginwindow_enforce ..."
-            bannerText="You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions:
-
--The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
-
--At any time, the USG may inspect and seize data stored on this IS.
-
--Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG authorized purpose.
-
--This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.
-
--Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details."
-/bin/mkdir /Library/Security/PolicyBanner.rtfd
-/usr/bin/textutil -convert rtf -output /Library/Security/PolicyBanner.rtfd/TXT.rtf -stdin <<EOF
-$bannerText
-EOF
+            /usr/local/bin/jamf policy --event policyBanner
         fi
     else
         logmessage "Settings for: os_policy_banner_loginwindow_enforce already configured, continuing..."
     fi
 elif [[ ! -z "$exempt_reason" ]];then
     logmessage "os_policy_banner_loginwindow_enforce has an exemption, remediation skipped (Reason: "$exempt_reason")"
-fi
-    
-#####----- Rule: os_policy_banner_ssh_configure -----#####
-## Addresses the following NIST 800-53 controls: 
-# * AC-8
-
-# check to see if rule is exempt
-unset exempt
-unset exempt_reason
-
-exempt=$(/usr/bin/osascript -l JavaScript << EOS 2>/dev/null
-ObjC.unwrap($.NSUserDefaults.alloc.initWithSuiteName('org.stig.audit').objectForKey('os_policy_banner_ssh_configure'))["exempt"]
-EOS
-)
-
-exempt_reason=$(/usr/bin/osascript -l JavaScript << EOS 2>/dev/null
-ObjC.unwrap($.NSUserDefaults.alloc.initWithSuiteName('org.stig.audit').objectForKey('os_policy_banner_ssh_configure'))["exempt_reason"]
-EOS
-)
-
-os_policy_banner_ssh_configure_audit_score=$($plb -c "print os_policy_banner_ssh_configure:finding" $audit_plist)
-if [[ ! $exempt == "1" ]] || [[ -z $exempt ]];then
-    if [[ $os_policy_banner_ssh_configure_audit_score == "true" ]]; then
-        ask 'os_policy_banner_ssh_configure - Run the command(s)-> bannerText="You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
-
-By using this IS (which includes any device attached to this IS), you consent to the following conditions:
-
--The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
-
--At any time, the USG may inspect and seize data stored on this IS.
-
--Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.
-
--This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.
-
--Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details."
-/bin/echo "${bannerText}" > /etc/banner ' N
-        if [[ $? == 0 ]]; then
-            logmessage "Running the command to configure the settings for: os_policy_banner_ssh_configure ..."
-            bannerText="You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
-
-By using this IS (which includes any device attached to this IS), you consent to the following conditions:
-
--The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
-
--At any time, the USG may inspect and seize data stored on this IS.
-
--Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.
-
--This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.
-
--Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details."
-/bin/echo "${bannerText}" > /etc/banner
-        fi
-    else
-        logmessage "Settings for: os_policy_banner_ssh_configure already configured, continuing..."
-    fi
-elif [[ ! -z "$exempt_reason" ]];then
-    logmessage "os_policy_banner_ssh_configure has an exemption, remediation skipped (Reason: "$exempt_reason")"
 fi
     
 #####----- Rule: os_policy_banner_ssh_enforce -----#####
@@ -6686,11 +6586,11 @@ os_sudo_timeout_configure_audit_score=$($plb -c "print os_sudo_timeout_configure
 if [[ ! $exempt == "1" ]] || [[ -z $exempt ]];then
     if [[ $os_sudo_timeout_configure_audit_score == "true" ]]; then
         ask 'os_sudo_timeout_configure - Run the command(s)-> /usr/bin/find /etc/sudoers* -type f -exec sed -i '"'"''"'"' '"'"'/timestamp_timeout/d'"'"' '"'"'{}'"'"' \;
-/bin/echo "Defaults timestamp_timeout=0" >> /etc/sudoers.d/mscp ' N
+/bin/echo "Defaults timestamp_timeout=15" >> /etc/sudoers.d/mscp ' N
         if [[ $? == 0 ]]; then
             logmessage "Running the command to configure the settings for: os_sudo_timeout_configure ..."
             /usr/bin/find /etc/sudoers* -type f -exec sed -i '' '/timestamp_timeout/d' '{}' \;
-/bin/echo "Defaults timestamp_timeout=0" >> /etc/sudoers.d/mscp
+/bin/echo "Defaults timestamp_timeout=15" >> /etc/sudoers.d/mscp
         fi
     else
         logmessage "Settings for: os_sudo_timeout_configure already configured, continuing..."

@@ -8,8 +8,6 @@
 	<false/>
 	<key>dontAllowFDEDisable</key>
 	<true/>
-	<key>forceInternetSharingOff</key>
-	<true/>
 	<key>timeServer</key>
 	<string>time.nist.gov</string>
 </dict>
