@@ -1,3 +1,9 @@
 odv:
   custom: 10
 mobileconfig: false
+fix: |
+  [source,bash]
+  ---
+  /usr/local/bin/jamf policy -event passwordpolicy
+  ---
+  
